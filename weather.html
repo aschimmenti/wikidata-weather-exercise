@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise 2: Weather API</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #e3f2fd;
+    }
+    
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+    }
+    
+    h1 {
+      color: #333;
+    }
+    
+    .api-key-notice {
+      background-color: #fff3cd;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    
+    button {
+      background-color: #2196F3;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    
+    button:hover {
+      background-color: #1976D2;
+    }
+    
+    .results {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+    }
+    
+    .weather-main {
+      text-align: center;
+      padding: 20px;
+      background-color: #2196F3;
+      color: white;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    
+    .weather-main .temp {
+      font-size: 48px;
+      font-weight: bold;
+    }
+    
+    .weather-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    
+    .weather-card {
+      background-color: white;
+      padding: 15px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+    
+    .weather-card strong {
+      display: block;
+      color: #555;
+      margin-bottom: 5px;
+    }
+    
+    .error {
+      color: red;
+      padding: 15px;
+      background-color: #ffebee;
+      border-radius: 4px;
+      margin-top: 20px;
+    }
+    
+    .info-box {
+      background-color: #e3f2fd;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      border-left: 4px solid #2196F3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Weather Information</h1>
+    
+    <div class="info-box">
+      <p><strong>📍 How this works:</strong></p>
+      <p>1. We search Wikidata for the city to get its coordinates</p>
+      <p>2. We use those coordinates to fetch weather data</p>
+      <p><small>(OpenWeather deprecated city name search)</small></p>
+    </div>
+    
+    <div class="api-key-notice">
+      <p><strong>⚠️ API Key Required</strong></p>
+      <p>To use this application, you need an OpenWeatherMap API key.</p>
+      <p>Get one free at: <a href="https://openweathermap.org/api" target="_blank">openweathermap.org/api</a></p>
+    </div>
+    
+    <form id="weatherForm">
+      <div class="form-group">
+        <label for="apiKey">API Key:</label>
+        <input type="text" id="apiKey" name="apiKey" placeholder="Enter your OpenWeatherMap API key" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" placeholder="Enter a city name (e.g., Bologna, Milan, Berlin)" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="units">Temperature Units:</label>
+        <select id="units" name="units">
+          <option value="metric">Celsius (°C)</option>
+          <option value="imperial">Fahrenheit (°F)</option>
+          <option value="standard">Kelvin (K)</option>
+        </select>
+      </div>
+      
+      <button type="submit">Get Weather</button>
+    </form>
+    
+    <div id="results"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('weatherForm');
+    const resultsDiv = document.getElementById('results');
+
+    // Load saved API key if available
+    const savedApiKey = localStorage.getItem('weatherApiKey');
+    if (savedApiKey) {
+      document.getElementById('apiKey').value = savedApiKey;
+    }
+
+    // When form is submitted
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const apiKey = document.getElementById('apiKey').value.trim();
+      const city = document.getElementById('city').value.trim();
+      const units = document.getElementById('units').value;
+      
+      if (!apiKey || !city) {
+        resultsDiv.innerHTML = '<div class="error">Please fill in all fields</div>';
+        return;
+      }
+      
+      // Save API key for next time
+      localStorage.setItem('weatherApiKey', apiKey);
+      
+      fetchWeatherData(apiKey, city, units);
+    });
+
+    // Step 1: Get coordinates from Wikidata
+    async function getCityCoordinates(city) {
+      const params = new URLSearchParams({
+        action: 'wbgetentities',
+        sites: 'enwiki',
+        titles: city,
+        props: 'labels|claims',
+        languages: 'en',
+        format: 'json',
+        origin: '*'
+      });
+
+      const url = `https://www.wikidata.org/w/api.php?${params.toString()}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      const entity = Object.values(data.entities)[0];
+      
+      if (!entity || entity.missing) {
+        throw new Error(`City "${city}" not found in Wikidata`);
+      }
+      
+      // Extract coordinates from property P625
+      if (!entity.claims || !entity.claims.P625) {
+        throw new Error(`No coordinates found for "${city}"`);
+      }
+      
+      const coordClaim = entity.claims.P625[0];
+      const coordValue = coordClaim.mainsnak.datavalue.value;
+      
+      return {
+        latitude: coordValue.latitude,
+        longitude: coordValue.longitude,
+        cityName: entity.labels.en ? entity.labels.en.value : city
+      };
+    }
+
+    // Step 2: Fetch weather using coordinates
+    async function fetchWeatherData(apiKey, city, units) {
+      resultsDiv.innerHTML = '<p>Step 1: Getting coordinates from Wikidata...</p>';
+
+      try {
+        // Get coordinates first
+        const coords = await getCityCoordinates(city);
+        
+        resultsDiv.innerHTML = `<p>Found: ${coords.cityName} at ${coords.latitude.toFixed(2)}°N, ${coords.longitude.toFixed(2)}°E</p><p>Step 2: Fetching weather data...</p>`;
+        
+        // Use coordinates to get weather
+        const params = new URLSearchParams({
+          lat: coords.latitude,
+          lon: coords.longitude,
+          appid: apiKey,
+          units: units
+        });
+
+        const url = `https://api.openweathermap.org/data/2.5/weather?${params.toString()}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.cod !== 200) {
+          throw new Error(data.message || 'Failed to fetch weather');
+        }
+        
+        // Display the results
+        displayResults(data, units);
+        
+      } catch (error) {
+        resultsDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+      }
+    }
+
+    // Function to display the results
+    function displayResults(data, units) {
+      const tempUnit = units === 'metric' ? '°C' : (units === 'imperial' ? '°F' : 'K');
+      const speedUnit = units === 'metric' ? 'm/s' : 'mph';
+      
+      let html = '<div class="results">';
+      html += '<h2>Current Weather</h2>';
+      
+      html += '<div class="weather-main">';
+      html += `<div class="temp">${Math.round(data.main.temp)}${tempUnit}</div>`;
+      html += `<div>${data.weather[0].description}</div>`;
+      html += `<div>${data.name}, ${data.sys.country}</div>`;
+      html += '</div>';
+      
+      html += '<div class="weather-info">';
+      
+      html += '<div class="weather-card">';
+      html += '<strong>Feels Like</strong>';
+      html += `<div>${Math.round(data.main.feels_like)}${tempUnit}</div>`;
+      html += '</div>';
+      
+      html += '<div class="weather-card">';
+      html += '<strong>Humidity</strong>';
+      html += `<div>${data.main.humidity}%</div>`;
+      html += '</div>';
+      
+      html += '<div class="weather-card">';
+      html += '<strong>Wind Speed</strong>';
+      html += `<div>${data.wind.speed} ${speedUnit}</div>`;
+      html += '</div>';
+      
+      html += '<div class="weather-card">';
+      html += '<strong>Pressure</strong>';
+      html += `<div>${data.main.pressure} hPa</div>`;
+      html += '</div>';
+      
+      html += '</div></div>';
+      
+      resultsDiv.innerHTML = html;
+    }
+  </script>
+</body>
+</html>

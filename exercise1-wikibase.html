@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exercise 1: Wikibase API</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #f0f0f0;
+    }
+    
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+    }
+    
+    h1 {
+      color: #333;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    
+    button:hover {
+      background-color: #45a049;
+    }
+    
+    .results {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+    }
+    
+    .entity-info p {
+      margin-bottom: 10px;
+    }
+    
+    .error {
+      color: red;
+      padding: 15px;
+      background-color: #ffebee;
+      border-radius: 4px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Wikibase API Query</h1>
+    
+    <form id="wikibaseForm">
+      <div class="form-group">
+        <label for="entityTitle">Entity Title (e.g., city name):</label>
+        <input type="text" id="entityTitle" name="entityTitle" placeholder="Enter a city name (e.g., Berlin, Rome, Milan)" required>
+      </div>
+      
+      <button type="submit">Get Information</button>
+    </form>
+    
+    <div id="results"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('wikibaseForm');
+    const resultsDiv = document.getElementById('results');
+
+    // When form is submitted
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const title = document.getElementById('entityTitle').value.trim();
+      
+      if (!title) {
+        resultsDiv.innerHTML = '<div class="error">Please enter a city name</div>';
+        return;
+      }
+      
+      fetchWikibaseData(title);
+    });
+
+    // Function to fetch data from Wikibase API
+    async function fetchWikibaseData(title) {
+      resultsDiv.innerHTML = '<p>Loading...</p>';
+
+      try {
+        // Build the API URL
+        const params = new URLSearchParams({
+          action: 'wbgetentities',
+          sites: 'enwiki',
+          titles: title,
+          props: 'descriptions|labels',
+          languages: 'en',
+          format: 'json',
+          origin: '*'
+        });
+
+        const url = `https://www.wikidata.org/w/api.php?${params.toString()}`;
+        
+        // Fetch the data
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        // Display the results
+        displayResults(data);
+        
+      } catch (error) {
+        resultsDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+      }
+    }
+
+    // Function to display the results
+    function displayResults(data) {
+      if (!data.entities) {
+        resultsDiv.innerHTML = '<div class="error">No data found</div>';
+        return;
+      }
+
+      const entities = Object.values(data.entities);
+      const entity = entities[0];
+      
+      if (!entity || entity.missing) {
+        resultsDiv.innerHTML = '<div class="error">Entity not found. Try a different spelling.</div>';
+        return;
+      }
+
+      let html = '<div class="results">';
+      html += '<h2>Entity Information</h2>';
+      html += '<div class="entity-info">';
+      html += `<p><strong>ID:</strong> ${entity.id}</p>`;
+      
+      if (entity.labels && entity.labels.en) {
+        html += `<p><strong>Label:</strong> ${entity.labels.en.value}</p>`;
+      }
+      
+      if (entity.descriptions && entity.descriptions.en) {
+        html += `<p><strong>Description:</strong> ${entity.descriptions.en.value}</p>`;
+      }
+      
+      html += `<p><a href="https://www.wikidata.org/wiki/${entity.id}" target="_blank">View on Wikidata</a></p>`;
+      html += '</div></div>';
+      
+      resultsDiv.innerHTML = html;
+    }
+  </script>
+</body>
+</html>
