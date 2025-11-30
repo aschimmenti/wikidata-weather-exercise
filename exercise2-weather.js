@@ -2,7 +2,7 @@
 // Fetches coordinates from Wikidata, then gets weather using those coordinates
 
 // Your OpenWeatherMap API key
-const API_KEY = '95dbc4aaf267efe18f95981c5539dbd7';
+const API_KEY = '<your api key here>';
 
 // Function to fetch entity data from Wikibase API and extract coordinates
 async function getCityCoordinates(cityName) {
