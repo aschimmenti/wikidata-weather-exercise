@@ -143,10 +143,7 @@ Umidità: 72%
 ```
 
 ## File Importanti
-
-- **[RIEPILOGO_AGGIORNAMENTO.md](RIEPILOGO_AGGIORNAMENTO.md)** - Spiega perché usiamo le coordinate
 - **[GUIDA_OPENWEATHER.md](GUIDA_OPENWEATHER.md)** - Riferimento completo API
-- **[FETCH_VS_HTTPS.md](FETCH_VS_HTTPS.md)** - Perché usiamo `fetch` invece di `https`
 
 ## Città da Provare
 
@@ -245,14 +242,16 @@ Usiamo JavaScript moderno:
 - Commenti semplici
 
 ## Estendere gli Esercizi
+Cerchiamo di creare un recommender basato sul meteo e le informazioni Wikipedia. 
+Usa la seguente guida per recuperare i dati da Wikipedia: 
+[GUIDA_WIKIPEDIA.md](GUIDA_WIKIPEDIA.md)
+Dopodiché, usiamo un LLM tramite una ulteriore API per creare un recommender in linguaggio naturale. 
+Il prompt deve chiedere, sulla base del meteo e del periodo dell'anno:
+- quali sono le principali attività da fare
+- quali sono le principali attrazioni da vedere
+- quali sono i piatti tipici da mangiare (es., se è estate e una città è famosa per il gelato, il modello dovrebbe consigliarlo, mentre se è inverno, il modello dovrebbe consigliare ad esempio una zuppa tipica del luogo)
 
-Idee per ulteriori esplorazioni:
-1. Aggiungi caching per evitare chiamate ripetute a Wikidata
-2. Supporta più città in una query
-3. Aggiungi previsioni meteo (richiede endpoint OpenWeather diverso)
-4. Mostra risultati su una mappa
-5. Confronta il meteo tra città
-6. Aggiungi dati meteo storici
+
 
 ## Risorse
 
@@ -264,8 +263,6 @@ Idee per ulteriori esplorazioni:
 
 ### Le Nostre Guide
 - [GUIDA_OPENWEATHER.md](GUIDA_OPENWEATHER.md) - Riferimento completo
-- [RIEPILOGO_AGGIORNAMENTO.md](RIEPILOGO_AGGIORNAMENTO.md) - Perché le coordinate sono importanti
-- [FETCH_VS_HTTPS.md](FETCH_VS_HTTPS.md) - Approcci moderni vs vecchi
 
 ## Licenza
 
