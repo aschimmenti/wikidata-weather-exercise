@@ -2,284 +2,1115 @@
 
 Questi esercizi insegnano come lavorare con le API usando JavaScript e Node.js, con particolare attenzione al **concatenamento di API** - utilizzare l'output di un'API come input per un'altra.
 
-## 🎯 Cosa Rende Speciali Questi Esercizi
+## 📋 Indice
 
-Utilizziamo le **coordinate di Wikidata** per recuperare i dati meteo, insegnando:
-- Come concatenare più API insieme
-- Come estrarre dati da strutture JSON complesse
-- Come adattarsi quando le API cambiano (OpenWeather ha deprecato la ricerca per nome città!)
-- Capacità di problem-solving del mondo reale
+- [Cosa Imparerai](#cosa-imparerai)
+- [Prerequisiti](#prerequisiti)
+- [Installazione](#installazione)
+- [Avvio Rapido](#avvio-rapido)
+- [Panoramica degli Esercizi](#panoramica-degli-esercizi)
+- [Come Funziona](#come-funziona)
+- [Guida agli Esercizi](#guida-agli-esercizi)
+- [Concetti Chiave](#concetti-chiave)
+- [Risoluzione Problemi](#risoluzione-problemi)
+- [Risorse](#risorse)
 
-## Prerequisiti
+---
 
-- **Node.js 18+** (per il supporto a `fetch`)
-- Un browser web (per gli esercizi HTML)
-- **Chiave API OpenWeatherMap** (gratuita su https://openweathermap.org/api)
+## 🎯 Cosa Imparerai
 
-Controlla la tua versione di Node.js:
+Questi esercizi coprono competenze fondamentali per lavorare con le API:
+
+### Competenze di Base
+- ✅ Fare richieste HTTP con `fetch`
+- ✅ Analizzare e manipolare JSON
+- ✅ Gestire errori nelle chiamate API
+- ✅ Usare `async/await` per codice asincrono
+- ✅ Lavorare con Node.js e NPM
+
+### Competenze Avanzate
+- ✅ **Concatenamento API** - Usare l'output di un'API come input di un'altra
+- ✅ Estrarre dati da strutture JSON complesse
+- ✅ Gestire autenticazione API (chiavi API)
+- ✅ Lavorare con coordinate geografiche
+- ✅ Integrare servizi web multipli
+
+### Problem Solving Reale
+- ✅ Adattarsi a modifiche delle API (deprecazioni)
+- ✅ Trovare soluzioni alternative quando un'API cambia
+- ✅ Combinare dati da fonti diverse
+
+---
+
+## 📦 Prerequisiti
+
+### Software Necessario
+
+#### 1. Node.js (versione 18 o superiore)
+
+**Perché Node 18+?** Serve per il supporto nativo a `fetch`.
+
+**Installazione:**
+1. Vai su [nodejs.org](https://nodejs.org)
+2. Scarica la versione **LTS** (Long Term Support)
+3. Installa seguendo le istruzioni per il tuo sistema operativo
+
+**Verifica installazione:**
 ```bash
-node --version  # Deve essere 18 o superiore
+node -v
+# Output atteso: v18.x.x o superiore
 ```
 
-## Avvio Rapido
+**Nota:** Node.js include automaticamente NPM (Node Package Manager).
 
-### La Tua Chiave API
-Gli esercizi sono pre-configurati con questa chiave:
+#### 2. NPM (Node Package Manager)
+
+NPM viene installato automaticamente con Node.js.
+
+**Verifica installazione:**
+```bash
+npm -v
+# Output atteso: 9.x.x o superiore
+```
+
+**Aggiornamento NPM (opzionale):**
+```bash
+npm install npm@latest -g
+```
+
+#### 3. Un Editor di Testo
+
+Scegli uno di questi:
+- **Visual Studio Code** (consigliato) - [code.visualstudio.com](https://code.visualstudio.com)
+- **Sublime Text** - [sublimetext.com](https://www.sublimetext.com)
+- Qualsiasi editor di tua preferenza
+
+#### 4. Un Browser Web Moderno
+
+Per gli esercizi HTML:
+- Chrome, Firefox, Safari, o Edge (versioni recenti)
+
+### Chiave API OpenWeatherMap
+
+**Nota:** Gli esercizi Node.js hanno già la chiave pre-configurata, ma per gli esercizi HTML dovrai inserirla.
+
+**Come ottenerla:**
+1. Vai su [openweathermap.org](https://openweathermap.org/api)
+2. Clicca su "Sign Up" e crea un account gratuito
+3. Vai su "API Keys" nel tuo profilo
+4. Copia la chiave API (formato: `xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`)
+5. Aspetta 5-10 minuti per l'attivazione
+
+**La chiave già configurata negli esercizi:**
 ```
 95dbc4aaf267efe18f95981c5539dbd7
 ```
 
-### Esegui gli Esercizi
+---
+
+## 🚀 Installazione
+
+### 1. Scarica i File degli Esercizi
+
+Scarica tutti i file in una cartella sul tuo computer, ad esempio:
+```
+Documenti/
+  └── esercizi-api/
+      ├── exercise1-wikibase.js
+      ├── exercise1-wikibase.html
+      ├── exercise2-weather.js
+      ├── exercise2-weather.html
+      ├── exercise3-combined.js
+      ├── exercise3-combined.html
+      ├── README.md
+      ├── GUIDA_WIKIPEDIA.md
+      └── GUIDA_OPENWEATHER.md
+```
+
+### 2. Apri il Terminale nella Cartella
+
+**Su Windows:**
+1. Apri la cartella in Esplora File
+2. Nella barra degli indirizzi, digita `cmd` e premi Invio
+3. O fai Shift + Click Destro → "Apri finestra PowerShell qui"
+
+**Su Mac:**
+1. Apri Finder e vai alla cartella
+2. Click destro sulla cartella → "Servizi" → "Nuovo Terminale nella cartella"
+3. O usa Spotlight: Cmd+Spazio, digita "Terminal"
+
+**Su Linux:**
+1. Apri il terminale
+2. Usa `cd` per navigare alla cartella:
+```bash
+cd ~/Documenti/esercizi-api
+```
+
+### 3. Verifica che Tutto Sia Pronto
 
 ```bash
-# Esercizio 1: Ottieni informazioni Wikipedia + coordinate
-node exercise1-wikibase.js "Bologna"
+# Controlla Node.js
+node -v
 
-# Esercizio 2: Ottieni meteo (tramite coordinate da Wikidata)
+# Controlla NPM
+npm -v
+
+# Lista i file
+ls        # Mac/Linux
+dir       # Windows
+```
+
+---
+
+## ⚡ Avvio Rapido
+
+### Esegui il Primo Esercizio
+
+```bash
+# Esercizio 1: Informazioni Wikipedia
+node exercise1-wikibase.js "Bologna"
+```
+
+**Output atteso:**
+```
+Fetching information for: Bologna
+
+=== Informazioni Entità ===
+ID: Q1891
+Label: Bologna
+Description: comune italiano capoluogo dell'Emilia-Romagna
+Coordinates: 44.4949°N, 11.3426°E
+========================
+```
+
+### Prova Altri Esercizi
+
+```bash
+# Esercizio 2: Meteo
 node exercise2-weather.js "Bologna"
 
-# Esercizio 3: Combinato - Sia Wikipedia che meteo
+# Esercizio 3: Wikipedia + Meteo
 node exercise3-combined.js "Bologna"
 ```
 
-## Come Funziona
+### Apri le Interfacce Web
 
-### Il Processo in Due Fasi
+1. Fai doppio click sui file `.html`
+2. Si apriranno nel tuo browser predefinito
+3. Segui le istruzioni a schermo
 
-#### Approccio Tradizionale (Deprecato):
+---
+
+## 📚 Panoramica degli Esercizi
+
+### Progressione Didattica
+
+Gli esercizi sono ordinati per difficoltà crescente:
+
 ```
-Nome città → API OpenWeather → Dati meteo ❌
+Esercizio 1 → Esercizio 2 → Esercizio 3
+   (Base)      (Intermedio)   (Avanzato)
 ```
 
-#### Il Nostro Approccio Moderno:
-```
-Nome città → API Wikidata → Coordinate → API OpenWeather → Dati meteo ✅
-```
+### Schema Generale
 
-### Perché Facciamo Così
+| Esercizio | API Usate | Difficoltà | Concetti |
+|-----------|-----------|------------|----------|
+| **1. Wikibase** | Wikidata | ⭐ Base | API singola, JSON, coordinate |
+| **2. Meteo** | Wikidata + OpenWeather | ⭐⭐ Intermedio | Concatenamento API, autenticazione |
+| **3. Combinato** | Wikidata + OpenWeather | ⭐⭐⭐ Avanzato | Integrazione completa, gestione errori |
+| **4. Wikipedia** | Wikidata + Wikipedia | ⭐⭐ Intermedio | Sitelinks, contenuto multilingua |
 
-OpenWeather ha deprecato le ricerche per nome città:
+---
+
+## 🔄 Come Funziona
+
+### Il Problema: API Deprecata
+
+OpenWeather ha **deprecato** le ricerche per nome città:
 > "Le richieste API per nome città, codici postali e ID città sono state deprecate."
 
-**Soluzione**: Otteniamo le coordinate da Wikidata (proprietà P625), poi le usiamo per il meteo!
+### La Soluzione: Usare Coordinate
 
-## Dettaglio degli Esercizi
+Invece di cercare direttamente per nome città, usiamo un approccio in due fasi:
+
+#### Vecchio Approccio (Non Più Supportato)
+```
+Nome città → OpenWeather API → Meteo ❌
+```
+
+#### Nuovo Approccio (Usato in Questi Esercizi)
+```
+Nome città → Wikidata → Coordinate → OpenWeather → Meteo ✅
+```
+
+### Perché Questo È Meglio
+
+1. **A prova di futuro** - Usa API supportate ufficialmente
+2. **Più accurato** - Coordinate precise da Wikidata
+3. **Educativo** - Insegna il concatenamento di API
+4. **Affidabile** - Non dipende da funzionalità deprecate
+
+### Flusso dei Dati
+
+```
+┌──────────────┐
+│ Utente dice: │
+│  "Bologna"   │
+└──────┬───────┘
+       │
+       ▼
+┌─────────────────────┐
+│  1. API Wikidata    │
+│  Cerca "Bologna"    │
+│  su Wikipedia EN    │
+└─────────┬───────────┘
+          │
+          ▼ Restituisce Q1891 + Coordinate
+┌─────────────────────┐
+│  Coordinate:        │
+│  Lat: 44.4949°N    │
+│  Lon: 11.3426°E    │
+└─────────┬───────────┘
+          │
+          ▼
+┌─────────────────────┐
+│  2. API OpenWeather │
+│  Usa coordinate     │
+│  per il meteo       │
+└─────────┬───────────┘
+          │
+          ▼
+┌─────────────────────┐
+│  Risultato:         │
+│  Meteo a Bologna    │
+│  Temp: 15°C        │
+└─────────────────────┘
+```
+
+---
+
+## 📖 Guida agli Esercizi
 
 ### Esercizio 1: API Wikibase
 
+**Obiettivo:** Imparare a interrogare Wikidata e estrarre informazioni strutturate.
+
 **Cosa fa:**
-- Recupera informazioni Wikipedia/Wikidata su una città
-- Estrae le coordinate dalla proprietà P625
-- Mostra ID, etichetta, descrizione e coordinate
+- Cerca una città su Wikipedia (inglese)
+- Ottiene l'ID Wikidata (es. Q1891 per Bologna)
+- Estrae etichetta, descrizione e coordinate (proprietà P625)
 
 **File:**
 - `exercise1-wikibase.js` - Script Node.js
 - `exercise1-wikibase.html` - Interfaccia web
 
-**Nessuna chiave API richiesta!**
+**Esecuzione:**
+```bash
+node exercise1-wikibase.js "Bologna"
+node exercise1-wikibase.js "Milan"
+node exercise1-wikibase.js "Rome"
+```
 
-**Output di esempio:**
+**Output:**
 ```
 === Informazioni Entità ===
 ID: Q1891
-Etichetta: Bologna
-Descrizione: comune italiano capoluogo dell'Emilia-Romagna
-Coordinate: 44.4949°N, 11.3426°E
+Label: Bologna
+Description: comune italiano capoluogo dell'Emilia-Romagna
+Coordinates: 44.4949°N, 11.3426°E
+Wikidata URL: https://www.wikidata.org/wiki/Q1891
 ========================
 ```
 
-### Esercizio 2: API Meteo (con Coordinate Wikidata)
+**Concetti appresi:**
+- Struttura delle API RESTful
+- Parsing di JSON complessi
+- Estrazione di proprietà specifiche (P625 per coordinate)
+- Header HTTP (User-Agent richiesto da Wikimedia)
+
+---
+
+### Esercizio 2: API Meteo con Coordinate
+
+**Obiettivo:** Imparare a concatenare due API - usare l'output della prima come input della seconda.
 
 **Cosa fa:**
-1. Ottiene le coordinate da Wikidata
-2. Usa le coordinate per recuperare il meteo da OpenWeather
-3. Mostra le condizioni meteo attuali
+1. **Fase 1:** Interroga Wikidata per ottenere le coordinate della città
+2. **Fase 2:** Usa le coordinate per interrogare OpenWeather
+3. **Fase 3:** Mostra il meteo attuale
 
 **File:**
-- `exercise2-weather.js` - Script Node.js (chiave pre-configurata)
+- `exercise2-weather.js` - Script Node.js (chiave API pre-configurata)
 - `exercise2-weather.html` - Interfaccia web (inserisci la tua chiave)
 
-**Output di esempio:**
-```
-Fase 1: Recupero coordinate per Bologna da Wikidata...
-Trovato: Bologna a 44.4949°N, 11.3426°E
-
-Fase 2: Recupero dati meteo...
-
-=== Informazioni Meteo ===
-Posizione: Bologna, IT
-Meteo: Sereno (cielo sereno)
-Temperatura: 15.5°C
-Percepita: 14.8°C
-Umidità: 72%
-...
+**Esecuzione:**
+```bash
+node exercise2-weather.js "Bologna"
+node exercise2-weather.js "Milan" imperial  # Fahrenheit
 ```
 
-### Esercizio 3: API Combinate
+**Output:**
+```
+Step 1: Fetching coordinates for Bologna from Wikidata...
+Found: Bologna at 44.4949°N, 11.3426°E
+
+Step 2: Fetching weather data...
+
+=== Weather Information ===
+Location: Bologna, IT
+Coordinates: 44.49°N, 11.34°E
+Weather: Clear (clear sky)
+Temperature: 15.5°C
+Feels like: 14.8°C
+Humidity: 72%
+Pressure: 1013 hPa
+Wind Speed: 2.5 m/s
+===========================
+```
+
+**Concetti appresi:**
+- Concatenamento API (API chaining)
+- Autenticazione con chiavi API
+- Gestione di chiamate asincrone sequenziali
+- Conversione unità di misura (metric/imperial)
+
+---
+
+### Esercizio 3: Integrazione Completa
+
+**Obiettivo:** Combinare informazioni da più API in un'unica vista.
 
 **Cosa fa:**
-- Recupera informazioni Wikipedia E meteo in una volta sola
-- Mostra il profilo completo della città
-- Dimostra l'uso parallelo delle API
+- Recupera **simultaneamente** informazioni Wikipedia e meteo
+- Mostra un profilo completo della città
+- Dimostra l'uso parallelo di API
 
 **File:**
-- `exercise3-combined.js` - Script Node.js (chiave pre-configurata)
-- `exercise3-combined.html` - Interfaccia web (inserisci la tua chiave)
+- `exercise3-combined.js` - Script Node.js
+- `exercise3-combined.html` - Interfaccia web completa
 
-**Output di esempio:**
+**Esecuzione:**
+```bash
+node exercise3-combined.js "Bologna"
 ```
-📚 INFORMAZIONI WIKIPEDIA
+
+**Output:**
+```
+==================================================
+Fetching information for: Bologna
+==================================================
+
+Step 1: Fetching from Wikidata...
+Found coordinates: 44.4949°N, 11.3426°E
+
+Step 2: Fetching weather data...
+
+📚 WIKIPEDIA INFORMATION
+--------------------------------------------------
 ID: Q1891
-Etichetta: Bologna
-Descrizione: comune italiano capoluogo dell'Emilia-Romagna
-Coordinate: 44.4949°N, 11.3426°E
+Label: Bologna
+Description: comune italiano capoluogo dell'Emilia-Romagna
+Coordinates: 44.4949°N, 11.3426°E
+Wikidata URL: https://www.wikidata.org/wiki/Q1891
 
-🌤️ METEO ATTUALE
-Posizione: Bologna, IT
-Condizione: Sereno (cielo sereno)
-Temperatura: 16°C
-Umidità: 72%
-...
+🌤️ CURRENT WEATHER
+--------------------------------------------------
+Location: Bologna, IT
+Condition: Clear (clear sky)
+Temperature: 16°C
+Feels Like: 15°C
+Humidity: 72%
+Pressure: 1013 hPa
+Wind: 2.5 m/s
+Cloudiness: 10%
+
+==================================================
 ```
 
-## File Importanti
-- **[GUIDA_OPENWEATHER.md](GUIDA_OPENWEATHER.md)** - Riferimento completo API
+**Concetti appresi:**
+- Gestione di chiamate API parallele
+- Integrazione di dati da fonti multiple
+- Gestione errori complessa
+- Presentazione dati strutturati
 
-## Città da Provare
+---
 
-Tutte queste funzionano perfettamente:
-- Bologna
-- Milano (usa "Milan" per Wikipedia inglese)
-- Roma (usa "Rome")
-- Firenze (usa "Florence")
-- Berlin
-- Tokyo
-- Paris
-- London
-- New York
-- Madrid
+### Esercizio 4: Contenuto Wikipedia (Opzionale)
 
-**Importante**: Usa i nomi di Wikipedia inglese!
-- ✅ "Milan" non "Milano"
-- ✅ "Florence" non "Firenze"
-- ✅ "Rome" non "Roma"
+**Obiettivo:** Imparare a navigare nell'ecosistema Wikimedia usando i sitelinks.
 
-## Dettagli Tecnici
+**Documentazione completa:** [ESERCIZIO4_WIKIPEDIA.md](ESERCIZIO4_WIKIPEDIA.md)
 
-### API Utilizzate
+**Cosa fa:**
+- Usa i sitelinks di Wikidata per trovare pagine Wikipedia
+- Recupera contenuto testuale in più lingue
+- Mostra estratti delle pagine Wikipedia
 
-**1. API Wikibase/Wikidata**
-- Endpoint: `https://www.wikidata.org/w/api.php`
-- Autenticazione: Nessuna (richiede header User-Agent)
-- Limite rate: Generoso (sii rispettoso)
-- Gratuita: ✅ Sì
+**Concetti appresi:**
+- Navigazione tra progetti Wikimedia
+- Gestione contenuti multilingua
+- API Wikipedia (extracts)
 
-**2. API OpenWeatherMap Current Weather**
-- Endpoint: `https://api.openweathermap.org/data/2.5/weather`
-- Autenticazione: Chiave API richiesta
-- Limite rate: 60 chiamate/min, 1M chiamate/mese (tier gratuito)
-- Gratuita: ✅ Sì (con limiti)
+---
 
-### Flusso dei Dati
+## 🔑 Concetti Chiave
+
+### 1. API (Application Programming Interface)
+
+Un'API è un insieme di regole che permette a programmi diversi di comunicare tra loro.
+
+**Esempio pratico:**
+```javascript
+// Tu chiedi (richiesta)
+fetch('https://api.example.com/data')
+
+// L'API risponde (risposta)
+{ "data": "Hello!" }
+```
+
+### 2. HTTP e REST
+
+**HTTP** (HyperText Transfer Protocol) è il protocollo usato per comunicare sul web.
+
+**Metodi principali:**
+- `GET` - Recupera dati (quello che usiamo in questi esercizi)
+- `POST` - Invia dati
+- `PUT` - Aggiorna dati
+- `DELETE` - Elimina dati
+
+**REST** (REpresentational State Transfer) è uno stile architetturale per API.
+
+### 3. JSON (JavaScript Object Notation)
+
+Formato standard per scambiare dati tra API.
+
+**Esempio:**
+```json
+{
+  "city": "Bologna",
+  "temperature": 15.5,
+  "condition": "clear"
+}
+```
+
+**In JavaScript:**
+```javascript
+const data = JSON.parse(jsonString);  // String → Object
+const json = JSON.stringify(data);     // Object → String
+```
+
+### 4. Async/Await
+
+JavaScript moderno per gestire operazioni asincrone.
+
+**Vecchio modo (callback):**
+```javascript
+fetch(url).then(response => {
+  return response.json();
+}).then(data => {
+  console.log(data);
+});
+```
+
+**Nuovo modo (async/await):**
+```javascript
+async function getData() {
+  const response = await fetch(url);
+  const data = await response.json();
+  console.log(data);
+}
+```
+
+### 5. Concatenamento API (API Chaining)
+
+Usare l'output di un'API come input per un'altra.
+
+**Schema:**
+```javascript
+// Fase 1: Ottieni coordinate
+const coords = await getCoordinates("Bologna");
+// coords = { lat: 44.49, lon: 11.34 }
+
+// Fase 2: Usa coordinate per il meteo
+const weather = await getWeather(coords.lat, coords.lon);
+```
+
+**Perché è importante:**
+- Le API moderne sono specializzate
+- Nessuna singola API ha tutti i dati
+- Combinare API crea valore aggiunto
+
+### 6. Autenticazione API
+
+Molte API richiedono una chiave per identificare chi fa la richiesta.
+
+**Esempio:**
+```javascript
+const url = `https://api.example.com/data?apikey=${API_KEY}`;
+```
+
+**Perché serve:**
+- Limiti di utilizzo (rate limiting)
+- Sicurezza
+- Tracciamento utilizzo
+
+### 7. Coordinate Geografiche
+
+**Latitudine:** Distanza dall'equatore (-90° a +90°)
+- Positiva = Nord, Negativa = Sud
+- Es: Bologna = 44.49°N
+
+**Longitudine:** Distanza dal meridiano di Greenwich (-180° a +180°)
+- Positiva = Est, Negativa = Ovest
+- Es: Bologna = 11.34°E
+
+### 8. Proprietà Wikidata
+
+Wikidata usa proprietà numerate per descrivere entità:
+
+| Proprietà | Significato | Esempio |
+|-----------|-------------|---------|
+| P625 | Coordinate geografiche | 44.49°N, 11.34°E |
+| P31 | Istanza di | Q515 (città) |
+| P17 | Stato | Q38 (Italia) |
+| P1082 | Popolazione | 391,000 |
+
+---
+
+## 🛠️ Risoluzione Problemi
+
+### Errori Comuni
+
+#### 1. "node: command not found"
+
+**Problema:** Node.js non è installato o non è nel PATH.
+
+**Soluzione:**
+```bash
+# Verifica installazione
+which node    # Mac/Linux
+where node    # Windows
+
+# Se non restituisce nulla, reinstalla Node.js
+# Scarica da: https://nodejs.org
+```
+
+#### 2. "fetch is not defined"
+
+**Problema:** Stai usando una versione di Node.js troppo vecchia.
+
+**Soluzione:**
+```bash
+# Controlla versione
+node -v
+
+# Deve essere >= 18.0.0
+# Aggiorna Node.js se necessario
+```
+
+#### 3. "No coordinates found for {città}"
+
+**Problema:** La città non esiste in Wikidata con quel nome, o non ha coordinate.
+
+**Soluzioni:**
+- Usa il nome inglese della città (es. "Milan" non "Milano")
+- Controlla che esista la pagina Wikipedia inglese
+- Prova una città più grande nelle vicinanze
+
+**Città che funzionano sicuramente:**
+- Bologna ✅
+- Milan ✅
+- Rome ✅
+- Florence ✅
+- Venice ✅
+- Naples ✅
+
+#### 4. "City not found in Wikidata"
+
+**Problema:** Il nome non corrisponde esattamente al titolo Wikipedia.
+
+**Soluzione:**
+```bash
+# NON usare:
+node exercise1-wikibase.js "Milano"      ❌
+node exercise1-wikibase.js "Firenze"     ❌
+
+# USA invece:
+node exercise1-wikibase.js "Milan"       ✅
+node exercise1-wikibase.js "Florence"    ✅
+```
+
+**Come trovare il nome giusto:**
+1. Vai su Wikipedia inglese
+2. Cerca la città
+3. Usa il titolo della pagina
+
+#### 5. "Invalid API key"
+
+**Problema:** La chiave OpenWeather non è valida o non è ancora attiva.
+
+**Soluzioni:**
+1. Controlla di aver copiato la chiave correttamente (32 caratteri)
+2. Aspetta 5-10 minuti dopo la registrazione
+3. Verifica su https://home.openweathermap.org/api_keys
+4. Assicurati che la chiave sia attiva (stato: "Active")
+
+#### 6. "ECONNREFUSED" o "Network Error"
+
+**Problema:** Problemi di connessione internet o firewall.
+
+**Soluzioni:**
+- Controlla la connessione internet
+- Disabilita temporaneamente VPN/proxy
+- Controlla le impostazioni del firewall
+- Prova con un'altra rete
+
+#### 7. File HTML non mostra risultati
+
+**Problema:** Possibili cause multiple.
+
+**Checklist:**
+- [ ] Hai inserito la chiave API?
+- [ ] Hai cliccato il pulsante "Get Weather"?
+- [ ] Hai controllato la Console del browser (F12)?
+- [ ] Il browser è aggiornato?
+
+**Per vedere gli errori:**
+1. Apri il file HTML nel browser
+2. Premi F12 (o Click destro → "Ispeziona")
+3. Vai alla tab "Console"
+4. Guarda gli errori in rosso
+
+---
+
+## 📊 Città da Testare
+
+### Città Italiane
+
+| Nome Italiano | Nome per Wikidata | Funziona? |
+|---------------|-------------------|-----------|
+| Bologna | `Bologna` | ✅ |
+| Milano | `Milan` | ✅ |
+| Roma | `Rome` | ✅ |
+| Firenze | `Florence` | ✅ |
+| Venezia | `Venice` | ✅ |
+| Napoli | `Naples` | ✅ |
+| Torino | `Turin` | ✅ |
+| Genova | `Genoa` | ✅ |
+| Palermo | `Palermo` | ✅ |
+| Bari | `Bari` | ✅ |
+
+### Città Internazionali
+
+| Città | Funziona? |
+|-------|-----------|
+| `Berlin` | ✅ |
+| `Paris` | ✅ |
+| `London` | ✅ |
+| `Madrid` | ✅ |
+| `Amsterdam` | ✅ |
+| `Vienna` | ✅ |
+| `Tokyo` | ✅ |
+| `New York` | ✅ |
+| `Sydney` | ✅ |
+| `Moscow` | ✅ |
+
+**Regola generale:** Usa sempre il nome della pagina Wikipedia **inglese**.
+
+---
+
+## 🎓 Approfondimenti
+
+### Estendere gli Esercizi
+
+Una volta completati gli esercizi base, prova queste sfide:
+
+#### Livello Intermedio
+
+1. **Cache delle coordinate**
+   - Salva le coordinate in un oggetto per evitare chiamate ripetute a Wikidata
+   
+2. **Più città contemporaneamente**
+   - Modifica il codice per gestire un array di città
+   
+3. **Conversione unità**
+   - Aggiungi un parametro per scegliere °C, °F, o K
+
+4. **Gestione errori migliorata**
+   - Messaggi di errore più specifici
+   - Suggerimenti automatici per città simili
+
+#### Livello Avanzato
+
+5. **Previsioni meteo**
+   - Usa un endpoint diverso di OpenWeather per le previsioni
+   - Mostra meteo per i prossimi giorni
+
+6. **Interfaccia grafica**
+   - Crea una UI più complessa con framework come React
+   - Aggiungi grafici per visualizzare i dati
+
+7. **Database locale**
+   - Usa SQLite per memorizzare città e coordinate
+   - Implementa un sistema di cache persistente
+
+8. **API aggiuntive**
+   - Aggiungi dati sulla qualità dell'aria
+   - Includi informazioni turistiche
+   - Mostra foto della città (Unsplash API)
+
+### Pattern Avanzati
+
+#### 1. Gestione Errori Robusta
 
 ```javascript
-// 1. Interroga Wikidata
-const wikiData = await getWikibaseEntity("Bologna");
-
-// 2. Estrai coordinate (proprietà P625)
-const coords = extractCoordinates(wikiData);
-// Restituisce: { latitude: 44.4949, longitude: 11.3426 }
-
-// 3. Recupera meteo usando le coordinate
-const weather = await getWeatherData(coords.latitude, coords.longitude);
+async function safeAPICall(apiFunction, ...args) {
+  try {
+    return await apiFunction(...args);
+  } catch (error) {
+    console.error(`API Error: ${error.message}`);
+    // Implementa retry logic, fallback, ecc.
+    return null;
+  }
+}
 ```
 
-## Obiettivi di Apprendimento
+#### 2. Rate Limiting
 
-Completando questi esercizi, imparerai:
+```javascript
+class RateLimiter {
+  constructor(maxRequests, timeWindow) {
+    this.maxRequests = maxRequests;
+    this.timeWindow = timeWindow;
+    this.requests = [];
+  }
+  
+  async throttle() {
+    const now = Date.now();
+    this.requests = this.requests.filter(
+      time => now - time < this.timeWindow
+    );
+    
+    if (this.requests.length >= this.maxRequests) {
+      const oldestRequest = Math.min(...this.requests);
+      const waitTime = this.timeWindow - (now - oldestRequest);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+    }
+    
+    this.requests.push(Date.now());
+  }
+}
+```
 
-### Livello Principiante:
-- ✅ Come fare richieste API con `fetch`
-- ✅ Come analizzare risposte JSON
-- ✅ Come gestire gli errori
-- ✅ Come usare `async/await`
+#### 3. Cache con Scadenza
 
-### Livello Intermedio:
-- ✅ **Concatenamento API** - usare l'output di un'API come input di un'altra
-- ✅ Estrarre dati da strutture JSON complesse
-- ✅ Gestire dati mancanti in modo elegante
-- ✅ Lavorare con diversi metodi di autenticazione API
+```javascript
+class CacheWithExpiry {
+  constructor(ttl = 3600000) { // 1 ora default
+    this.cache = new Map();
+    this.ttl = ttl;
+  }
+  
+  set(key, value) {
+    this.cache.set(key, {
+      value,
+      expiry: Date.now() + this.ttl
+    });
+  }
+  
+  get(key) {
+    const item = this.cache.get(key);
+    if (!item) return null;
+    
+    if (Date.now() > item.expiry) {
+      this.cache.delete(key);
+      return null;
+    }
+    
+    return item.value;
+  }
+}
+```
 
-### Concetti Avanzati:
-- ✅ Perché le query basate su coordinate sono più affidabili
-- ✅ Come adattarsi quando le API cambiano
-- ✅ Pattern di integrazione API del mondo reale
+---
 
-## Risoluzione Problemi
+## 📚 Risorse
 
-### "Nessuna coordinata trovata per {città}"
-**Soluzione**: Controlla che esista la pagina Wikipedia inglese. Prova una città vicina più grande.
+### Documentazione Ufficiale
 
-### "Città non trovata in Wikidata"
-**Soluzione**: Usa il titolo esatto di Wikipedia inglese. Controlla: https://en.wikipedia.org/wiki/[TuaCittà]
+#### API Utilizzate
+- **Wikidata API** - https://www.wikidata.org/w/api.php
+- **Wikipedia API** - https://www.mediawiki.org/wiki/API:Main_page
+- **OpenWeather API** - https://openweathermap.org/api
 
-### "Chiave API non valida"
-**Soluzione**: 
-1. Controlla di aver copiato correttamente la chiave
-2. Aspetta 5-10 minuti per l'attivazione delle nuove chiavi
-3. Verifica su: https://home.openweathermap.org/api_keys
+#### JavaScript e Node.js
+- **MDN Web Docs** - https://developer.mozilla.org/it/
+- **Node.js Docs** - https://nodejs.org/docs/
+- **NPM Docs** - https://docs.npmjs.com/
 
-### Errore versione Node.js
-**Soluzione**: Aggiorna a Node.js 18 o superiore per il supporto a `fetch`.
+### Tutorial e Guide
 
-## Stile del Codice
+#### JavaScript
+- **JavaScript.info** - https://javascript.info/ (italiano)
+- **FreeCodeCamp** - https://www.freecodecamp.org/
 
-Usiamo JavaScript moderno:
-- `async/await` invece di catene `.then()`
-- `fetch` invece del modulo `https`
-- Template literals per leggibilità
-- Nomi di variabili chiari
-- Commenti semplici
+#### API e HTTP
+- **Postman Learning** - https://learning.postman.com/
+- **HTTP Cats** - https://http.cat/ (codici di stato HTTP in modo divertente!)
 
-## Estendere gli Esercizi
-Cerchiamo di creare un recommender basato sul meteo e le informazioni Wikipedia. 
-Usa la seguente guida per recuperare i dati da Wikipedia: 
-[GUIDA_WIKIPEDIA.md](GUIDA_WIKIPEDIA.md)
-Dopodiché, usiamo un LLM tramite una ulteriore API per creare un recommender in linguaggio naturale. 
-Il prompt deve chiedere, sulla base del meteo e del periodo dell'anno:
-- quali sono le principali attività da fare
-- quali sono le principali attrazioni da vedere
-- quali sono i piatti tipici da mangiare (es., se è estate e una città è famosa per il gelato, il modello dovrebbe consigliarlo, mentre se è inverno, il modello dovrebbe consigliare ad esempio una zuppa tipica del luogo)
+#### Async JavaScript
+- **JavaScript Promises** - https://javascript.info/promise-basics
+- **Async/Await Tutorial** - https://javascript.info/async-await
 
+### Strumenti Utili
 
+#### Testing API
+- **Postman** - https://www.postman.com/
+- **Insomnia** - https://insomnia.rest/
+- **HTTPie** - https://httpie.io/
 
-## Risorse
+#### JSON Viewer
+- **JSON Formatter** - https://jsonformatter.org/
+- **JSON Viewer Online** - https://codebeautify.org/jsonviewer
 
-### Documentazione
-- [API Wikidata](https://www.wikidata.org/w/api.php)
-- [Proprietà P625 Wikidata](https://www.wikidata.org/wiki/Property:P625) (coordinate)
-- [OpenWeather Current Weather](https://openweathermap.org/current)
-- [MDN: Fetch API](https://developer.mozilla.org/it/docs/Web/API/Fetch_API)
+#### Coordinate Geografiche
+- **LatLong.net** - https://www.latlong.net/
+- **GPS Coordinates** - https://gps-coordinates.org/
 
-### Le Nostre Guide
-- [GUIDA_OPENWEATHER.md](GUIDA_OPENWEATHER.md) - Riferimento completo
+### Community e Supporto
 
-## Licenza
+#### Forum e Q&A
+- **Stack Overflow** - https://stackoverflow.com/ (tag: javascript, node.js, api)
+- **Reddit r/learnprogramming** - https://reddit.com/r/learnprogramming
 
-Questi esercizi sono forniti per scopi educativi.
+#### Discord/Slack
+- **Node.js Community** - https://nodejs.org/en/get-involved/
+- **JavaScript Italia** - Cerca su Discord
+
+---
+
+## 📝 Note Tecniche
+
+### API Endpoint Summary
+
+#### Wikidata
+```
+GET https://www.wikidata.org/w/api.php
+Parametri:
+  - action: wbgetentities
+  - sites: enwiki
+  - titles: {città}
+  - props: labels|descriptions|claims
+  - format: json
+Headers richiesti:
+  - User-Agent: {nome-app}
+```
+
+#### OpenWeather
+```
+GET https://api.openweathermap.org/data/2.5/weather
+Parametri:
+  - lat: {latitudine}
+  - lon: {longitudine}
+  - appid: {tua-chiave-API}
+  - units: metric|imperial|standard
+  - lang: it|en|...
+```
+
+### Limiti API
+
+| API | Limite Gratuito | Note |
+|-----|----------------|------|
+| Wikidata | Generoso | Sii rispettoso, max ~200 req/sec |
+| Wikipedia | Generoso | Sii rispettoso, max ~200 req/sec |
+| OpenWeather | 60 chiamate/min<br>1M chiamate/mese | Tier gratuito |
+
+### Proprietà Wikidata Utili
+
+| ID | Nome | Tipo | Esempio |
+|----|------|------|---------|
+| P625 | Coordinate | Coordinate | 44.49°N, 11.34°E |
+| P31 | Istanza di | Item | Q515 (città) |
+| P17 | Stato | Item | Q38 (Italia) |
+| P1082 | Popolazione | Quantità | 391,000 |
+| P856 | Sito web ufficiale | URL | https://... |
+| P18 | Immagine | File | Commons:... |
+
+---
+
+## ⚖️ Licenza e Attribuzione
+
+### Licenza degli Esercizi
+
+Questi esercizi sono forniti per **scopi educativi**.
+
+**Puoi:**
+- ✅ Usarli per imparare
+- ✅ Modificarli per i tuoi progetti
+- ✅ Condividerli con altri studenti
+
+**Non puoi:**
+- ❌ Venderli
+- ❌ Rimuovere le attribuzioni
+
+### Termini di Servizio delle API
 
 Rispetta i termini di servizio di:
-- [Wikidata](https://www.wikidata.org/wiki/Wikidata:API)
-- [OpenWeatherMap](https://openweathermap.org/terms)
 
-## Ringraziamenti
+- **Wikidata** - https://www.wikidata.org/wiki/Wikidata:API
+- **Wikipedia** - https://www.mediawiki.org/wiki/API:Etiquette
+- **OpenWeather** - https://openweathermap.org/terms
 
-- Wikibase/Wikidata per i dati geografici aperti e gratuiti
-- OpenWeatherMap per l'accesso API meteo gratuito
-- La comunità dei dati aperti
+### Attribuzioni
+
+**Dati:**
+- Wikidata/Wikipedia - © Wikimedia Foundation
+- OpenWeather - © OpenWeather
+
+**Guide e documentazione:**
+- Andrea Schimmenti & Fabio Vitali - Università di Bologna
+- Tecnologie Web 2024-2025
+
+---
+
+## 🎯 Obiettivi di Apprendimento
+
+Alla fine di questi esercizi, dovresti essere in grado di:
+
+### Competenze Tecniche
+
+- [ ] Installare e usare Node.js e NPM
+- [ ] Fare richieste HTTP con `fetch`
+- [ ] Analizzare e manipolare JSON
+- [ ] Usare `async/await` per codice asincrono
+- [ ] Gestire errori nelle chiamate API
+- [ ] Lavorare con coordinate geografiche
+- [ ] Usare chiavi API per autenticazione
+- [ ] Concatenare chiamate API multiple
+
+### Competenze Concettuali
+
+- [ ] Capire cos'è un'API REST
+- [ ] Comprendere il flusso richiesta-risposta HTTP
+- [ ] Conoscere i principali metodi HTTP (GET, POST, ecc.)
+- [ ] Capire JSON come formato di scambio dati
+- [ ] Comprendere il problema delle API deprecate
+- [ ] Saper trovare soluzioni alternative
+
+### Problem Solving
+
+- [ ] Leggere documentazione API
+- [ ] Debug di errori di rete
+- [ ] Trovare informazioni in strutture JSON complesse
+- [ ] Adattare codice a requisiti che cambiano
+- [ ] Combinare dati da fonti diverse
+
+---
+
+## 🚀 Prossimi Passi
+
+### Dopo Questi Esercizi
+
+1. **Esplora altre API**
+   - https://apilist.fun/ - Lista di API pubbliche
+   - https://github.com/public-apis/public-apis - Repository GitHub
+
+2. **Impara un Framework**
+   - **Express.js** - Per creare tue API
+   - **React** - Per interfacce utente
+   - **Vue.js** - Alternativa a React
+
+3. **Database**
+   - **MongoDB** - Database NoSQL
+   - **PostgreSQL** - Database SQL
+   - **Firebase** - Backend-as-a-Service
+
+4. **Deploy**
+   - **Heroku** - https://heroku.com
+   - **Vercel** - https://vercel.com
+   - **Netlify** - https://netlify.com
+
+### Progetti Suggeriti
+
+1. **Dashboard Meteo**
+   - Mostra meteo per più città
+   - Grafici di temperatura
+   - Previsioni settimanali
+
+2. **Travel Planner**
+   - Informazioni città + meteo
+   - Punti di interesse (da Wikipedia)
+   - Itinerari suggeriti
+
+3. **Geography Quiz**
+   - Domande su città e coordinate
+   - Usa dati da Wikidata
+   - Score tracking
+
+4. **Personal API**
+   - Crea la tua API che combina servizi
+   - Aggiungi caching
+   - Deploy online
+
+---
+
+## 📞 Supporto
+
+### Hai Domande?
+
+1. **Controlla prima:**
+   - Questo README
+   - [GUIDA_OPENWEATHER.md](GUIDA_OPENWEATHER.md)
+   - [GUIDA_WIKIPEDIA.md](GUIDA_WIKIPEDIA.md)
+   - Sezione "Risoluzione Problemi"
+
+2. **Errori nel codice:**
+   - Leggi attentamente il messaggio di errore
+   - Cerca l'errore su Google (copia e incolla il messaggio)
+   - Controlla Stack Overflow
+
+3. **Non funziona nulla:**
+   - Verifica Node.js: `node -v`
+   - Verifica di essere nella cartella giusta: `pwd` o `cd`
+   - Rileggi la sezione "Installazione"
+
+---
+
+## ✨ Crediti
+
+**Creato per il corso:**
+- Tecnologie Web 2024-2025
+- Università di Bologna
+
+**Docenti:**
+- Andrea Schimmenti
+- Prof. Fabio Vitali
+
+**Fonti dati:**
+- Wikimedia Foundation (Wikidata, Wikipedia)
+- OpenWeather
+
+**Ringraziamenti:**
+- La comunità open data
+- La comunità Node.js
+- Tutti gli studenti che hanno testato questi esercizi
+
+---
+
+## 📅 Changelog
+
+### v1.0 (Dicembre 2024)
+- ✅ Esercizi 1, 2, 3 completati
+- ✅ Documentazione italiana
+- ✅ Supporto coordinate da Wikidata
+- ✅ Interfacce HTML funzionanti
+- ✅ Guide complete
 
 ---
 
 **Buona programmazione! 🚀**
 
-Domande? Controlla le guide o prova gli esercizi - sono progettati per essere auto-esplicativi!
+**Domande?** Rileggi questo README - è fatto per rispondere a tutto! 📖
+
+**Pronto?** Inizia con: `node exercise1-wikibase.js "Bologna"` 🎯
